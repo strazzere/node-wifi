@@ -9,8 +9,12 @@ function connectToWifi(config, ap, callback) {
   args.push('wifi');
   args.push('connect');
   args.push(ap.ssid);
-  args.push('password');
-  args.push(ap.password);
+
+  // If password has already been saved, it should auto connect without it
+  if (ap.password) {
+    args.push('password');
+    args.push(ap.password);
+  }
 
   if (config.iface) {
     args.push('ifname');
