@@ -81,6 +81,10 @@ function init(options) {
 }
 
 exports.init = init;
+exports.getInterfaces = () => {
+  throw new Error('ERROR : use init before');
+};
+
 exports.scan = () => {
   throw new Error('ERROR : use init before');
 };
