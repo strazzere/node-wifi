@@ -2,6 +2,7 @@ const windowsConnect = require('./windows-connect.js');
 const windowsScan = require('./windows-scan.js');
 const windowsDisconnect = require('./windows-disconnect.js');
 const windowsGetCurrentConnections = require('./windows-current-connections');
+const linuxGetInterfaces = require('./linux-get-interfaces');
 const linuxConnect = require('./linux-connect');
 const linuxDisconnect = require('./linux-disconnect');
 const linuxDelete = require('./linux-delete');
@@ -26,6 +27,9 @@ function init(options) {
     config.iface = options.iface;
   }
 
+  let getInterfaces = () => {
+    throw new Error('ERROR : not available for this OS');
+  };
   let scan = () => {
     throw new Error('ERROR : not available for this OS');
   };
@@ -44,6 +48,7 @@ function init(options) {
 
   switch (process.platform) {
     case 'linux':
+      getInterfaces = linuxGetInterfaces(config);
       connect = linuxConnect(config);
       scan = linuxScan(config);
       disconnect = linuxDisconnect(config);
@@ -65,6 +70,7 @@ function init(options) {
     default:
       throw new Error('ERROR : UNRECOGNIZED OS');
   }
+  exports.getInterfaces = getInterfaces;
   exports.scan = scan;
   exports.connect = connect;
   exports.disconnect = disconnect;
