@@ -26,7 +26,7 @@ The node-wifi module allows macOS, windows and linux users to interact with surr
 | List current wifi connections | ✓     | ✓   | ✓       |
 | Disconnect                    | ✓     |     | ✓       |
 | Delete connection information | ✓     | ✓   |         |
-| Get Wifi Interface Names      | ✓     |     |         |
+| Get Wifi Interface Names      | ✓     |     | ✓       |
 
 </div>
 

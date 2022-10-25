@@ -2,6 +2,7 @@ const windowsConnect = require('./windows-connect.js');
 const windowsScan = require('./windows-scan.js');
 const windowsDisconnect = require('./windows-disconnect.js');
 const windowsGetCurrentConnections = require('./windows-current-connections');
+const windowsGetInterfaces = require('./windows-get-interfaces');
 const linuxGetInterfaces = require('./linux-get-interfaces');
 const linuxConnect = require('./linux-connect');
 const linuxDisconnect = require('./linux-disconnect');
@@ -62,6 +63,7 @@ function init(options) {
       getCurrentConnections = macGetCurrentConnections(config);
       break;
     case 'win32':
+      getInterfaces = windowsGetInterfaces(config);
       connect = windowsConnect(config);
       scan = windowsScan(config);
       disconnect = windowsDisconnect(config);
