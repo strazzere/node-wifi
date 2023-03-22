@@ -60,7 +60,7 @@ function connectToWifi(config, givenAP, callback) {
           'wlan',
           'connect',
           `ssid="${givenAP.ssid}"`,
-          `name="${givenAP.ssid}"`
+          `name="${savedProfile}"`
         ];
         if (config.iface) {
           params.push(`interface="${config.iface}"`);
