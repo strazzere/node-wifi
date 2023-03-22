@@ -2,6 +2,7 @@ const fs = require('fs').promises;
 const execFile = require('child_process').execFile;
 const env = require('./env');
 const scan = require('./windows-scan');
+const profiles = require('./windows-profiles');
 const path = require('path');
 const os = require('os');
 const profileFilename = path.join(os.tmpdir(), 'nodeWifiConnect.xml');
@@ -42,52 +43,77 @@ function connectToWifi(config, givenAP, callback) {
 
   profile
     .then(resolvedAP => {
+
       if (resolvedAP == null) {
         return Promise.reject('SSID not found');
       }
 
-      fs.writeFile(
-        profileFilename,
-        win32WirelessProfileBuilder(
-          resolvedAP,
-          givenAP.password,
-          givenAP.isHidden
+      const savedProfile = profiles(config)().then((savedProfiles) => {
+        let saved = savedProfiles.find(saved => {
+          return saved === givenAP.ssid;
+        });
+        return Promise.resolve(saved);
+      })
+
+      if (savedProfile) {
+        const cmd = 'netsh';
+        const params = [
+          'wlan',
+          'connect',
+          `ssid="${givenAP.ssid}"`,
+          `name="${givenAP.ssid}"`
+        ];
+        if (config.iface) {
+          params.push(`interface="${config.iface}"`);
+        }
+        return execCommand(cmd, params)
+        .then(() => callback && callback())
+      } else {
+        fs.writeFile(
+          profileFilename,
+          win32WirelessProfileBuilder(
+            resolvedAP,
+            givenAP.password,
+            givenAP.isHidden
+          )
         )
-      )
-        .then(() => {
-          return execCommand('netsh', [
-            'wlan',
-            'add',
-            'profile',
-            `filename=${profileFilename}`
-          ])
-            .then(() => {
-              const cmd = 'netsh';
-              const params = [
-                'wlan',
-                'connect',
-                `ssid="${givenAP.ssid}"`,
-                `name="${givenAP.ssid}"`
-              ];
-              if (config.iface) {
-                params.push(`interface="${config.iface}"`);
-              }
-              return execCommand(cmd, params);
-            })
-            .then(() => execCommand(`del ${profileFilename}`))
-            .then(() => callback && callback())
-            .catch(err => {
-              execFile(
-                'netsh',
-                ['wlan', 'delete', `profile "${givenAP.ssid}"`],
-                { env },
-                () => {
-                  callback && callback(err);
+          .then(() => {
+            return execCommand('netsh', [
+              'wlan',
+              'add',
+              'profile',
+              `filename=${profileFilename}`
+            ])
+              .then(() => {
+                const cmd = 'netsh';
+                const params = [
+                  'wlan',
+                  'connect',
+                  `ssid="${givenAP.ssid}"`,
+                  `name="${givenAP.ssid}"`
+                ];
+                if (config.iface) {
+                  params.push(`interface="${config.iface}"`);
                 }
-              );
-            });
-        })
-        .catch(e => Promise.reject(e));
+                return execCommand(cmd, params);
+              })
+              .then(() => execCommand(`del ${profileFilename}`))
+              .then(() => callback && callback())
+              .catch(err => {
+                execFile(
+                  'netsh',
+                  ['wlan', 'delete', `profile "${givenAP.ssid}"`],
+                  { env },
+                  () => {
+                    callback && callback(err);
+                  }
+                );
+              });
+          })
+          .catch(e => Promise.reject(e));
+      }
+
+
     })
     .catch(e => Promise.reject(e));
 }
