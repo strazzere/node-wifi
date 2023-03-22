@@ -43,17 +43,16 @@ function connectToWifi(config, givenAP, callback) {
 
   profile
     .then(resolvedAP => {
-
       if (resolvedAP == null) {
         return Promise.reject('SSID not found');
       }
 
-      const savedProfile = profiles(config)().then((savedProfiles) => {
+      const savedProfile = profiles(config)().then(savedProfiles => {
         let saved = savedProfiles.find(saved => {
           return saved === givenAP.ssid;
         });
         return Promise.resolve(saved);
-      })
+      });
 
       if (savedProfile) {
         const cmd = 'netsh';
@@ -66,8 +65,7 @@ function connectToWifi(config, givenAP, callback) {
         if (config.iface) {
           params.push(`interface="${config.iface}"`);
         }
-        return execCommand(cmd, params)
-        .then(() => callback && callback())
+        return execCommand(cmd, params).then(() => callback && callback());
       } else {
         fs.writeFile(
           profileFilename,
@@ -112,8 +110,6 @@ function connectToWifi(config, givenAP, callback) {
           })
           .catch(e => Promise.reject(e));
       }
-
-
     })
     .catch(e => Promise.reject(e));
 }

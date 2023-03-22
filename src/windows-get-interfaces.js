@@ -35,7 +35,7 @@ function parseShowInterfaces(stdout) {
     connections.push({
       iface: tmpConnection.name,
       status: tmpConnection.state,
-      ssid: tmpConnection.ssid,
+      ssid: tmpConnection.ssid
     });
 
     i = i + 18;

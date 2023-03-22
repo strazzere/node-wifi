@@ -23,7 +23,9 @@ function getProfiles(_config, callback) {
         const profiles = [];
         for (let i = 0; i < profileResults.length; i++) {
           if (profileResults[i].includes(':')) {
-            profiles.push(profileResults[i].substring(profileResults[i].indexOf(':') + 1))
+            profiles.push(
+              profileResults[i].substring(profileResults[i].indexOf(':') + 1)
+            );
           }
         }
 
