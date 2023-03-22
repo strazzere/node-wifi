@@ -24,7 +24,7 @@ function getProfiles(_config, callback) {
         for (let i = 0; i < profileResults.length; i++) {
           if (profileResults[i].includes(':')) {
             profiles.push(
-              profileResults[i].substring(profileResults[i].indexOf(':') + 1)
+              profileResults[i].substring(profileResults[i].indexOf(':') + 2) // Remove leading space as well
             );
           }
         }
