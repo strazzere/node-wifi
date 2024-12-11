@@ -3,6 +3,10 @@ const env = require('./env');
 
 function disconnect(config, callback) {
   const args = [];
+
+  args.push('--wait');
+  args.push('20');
+
   args.push('device');
   args.push('disconnect');
 
